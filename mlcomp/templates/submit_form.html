@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="col-md-8 col-md-offset-2 submit-form">
+    <div class="panel panel-default">
+        <form method="post" action="{{ url_for('submit') }}" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="team">Team*:</label>
+                <input type="text" class="form-control" id="team"
+                       placeholder="Enter your team name..." name="team">
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea rows="2" class="form-control" id="description"
+                          placeholder="Enter a short description..." name="description"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label> Predictions (.csv)*: </label>
+                <input type="file" id="pred_file" name="pred_file">
+            </div>
+            <div class="form-group">
+                <label> Code (.py): </label>
+                <input type="file" id="code_file" name="code_file">
+            </div>
+            <p> *Required </p>
+            <hr>
+
+            <div>
+                <a href="{{ url_for('leaderboard') }}" class="btn btn-default">Cancel</a>
+                <button type="submit" class="btn btn-success">Submit</button>
+            </div>
+
+
+            {% if errors %}
+                <hr>
+                <div id="errors">
+                    {% for error in errors %}
+                        <p class="error"> {{error}}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </form>
+
+
+    </div>
+</div>
+
+
+{% endblock %}

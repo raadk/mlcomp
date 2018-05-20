@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="col-md-12 submission-details">
+    <div class="buttons">
+        <div class="pull-right">
+            <a href="{{url_for('get_prediction', id_=id_)}}" class="btn btn-default">
+                <span class="glyphicon glyphicon-download-alt"></span> Predictions
+            </a>
+            <a href="{{url_for('get_code', id_=id_)}}" class="btn btn-default">
+                <span class="glyphicon glyphicon-download-alt"></span> Code
+            </a>
+            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete"><span class="glyphicon glyphicon-trash"></span></button>
+        </div>
+        <a href="{{url_for('leaderboard')}}" class="btn btn-default">
+            <span class="glyphicon glyphicon-chevron-left"></span> Back
+        </a>
+    </div>
+    <hr>
+    <div class="panel panel-default">
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Team</th>
+                {% if sub_info.final_score %} <th> Final score </th> {% endif %}
+                <th> LB Score </th>
+                <th> Description </th>
+                <th> Submitted </th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td> {{ rank }} </td>
+                    <td> {{ sub_info.team }} </td>
+                    {% if sub_info.final_score %} <td> {{ sub_info.final_score | round(digits) }} </td> {% endif %}
+                    <td> {{ sub_info.lb_score | round(digits) }} </td>
+                    <td> {{ sub_info.description }} </td>
+                    <td> {{ sub_info.submitted.strftime('%Y-%m-%d') }} </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    {% if code %} 
+    <hr>
+    <div class="panel panel-default panel-code">
+        <div class="panel-heading">
+            <h3 class="panel-title">Code</h3>
+            <span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-up"></i></span>
+        </div>
+        <div class="panel-body">
+            <pre class="prettyprint linenums" id="pretty-code">{{ code }}</pre>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Modal -->
+    <div class="modal fade" id="confirm-delete" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Confirm delete</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you would like to delete submission {{id_}}?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <form method="post" action="{{url_for('delete_submission', id_=id_)}}" class="form-inline">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-danger">
+                            <span class="glyphicon glyphicon-trash"></span> Delete
+                        </button>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+$(document).on('click', '.panel-heading', function(e){
+    var $this = $(this);
+	if(!$this.hasClass('panel-collapsed')) {
+		$this.parents('.panel').find('.panel-body').slideUp();
+		$this.addClass('panel-collapsed');
+		$this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+	} else {
+		$this.parents('.panel').find('.panel-body').slideDown();
+		$this.removeClass('panel-collapsed');
+		$this.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
+	}
+})
+</script>
+{% endblock %}
+

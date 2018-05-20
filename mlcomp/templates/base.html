@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{{ title }}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel='shortcut icon' type='image/x-icon' href="{{ url_for('static', filename='favicon.ico') }}" />
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/run_prettify.js') }}"></script>
+</head>
+<body>
+<div class="jumbotron" onclick="location.href='{{url_for('leaderboard')}}';">
+    <h1>{{ title }}</h1>
+    <p> {{ start_date }} to {{ end_date }} </p>
+</div>
+<div class="container">
+    {% block content %}
+    {% endblock %}
+</div>
+{% block js %}
+{% endblock js %}
+</body>
+</html>

@@ -1,0 +1,19 @@
+## To do 
+X Fix zipfile
+X Change y_true to y_test
+- Add get predictions and get data methods
+- Allow for non DataFrame inputs
+- Allow for different file extensions
+- Allow user to hide those submitted after end date
+- Submit to pypy
+- Tests
+
+## Futures
+- Only show top submission in leaderboard and add count of submissions in python make it an option to show all
+- Keep strings in one place
+
+## Notes
+- Streaming a file
+    - https://stackoverflow.com/questions/5166129/how-do-i-stream-a-file-using-werkzeug/5166423#5166423
+    - https://stackoverflow.com/questions/24318084/flask-make-response-with-large-files
+

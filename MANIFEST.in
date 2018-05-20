@@ -1,0 +1,2 @@
+recursive-include mlcomp/templates/ *
+recursive-include mlcomp/static/ *
