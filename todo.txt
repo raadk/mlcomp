@@ -1,6 +1,7 @@
 ## To do 
 X Fix zipfile
 X Change y_true to y_test
+- Initalize app from file
 - Add get predictions and get data methods
 - Allow for non DataFrame inputs
 - Allow for different file extensions
