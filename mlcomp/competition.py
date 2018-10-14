@@ -1,3 +1,6 @@
+"""
+Copyright 2018 - Raad Khraishi
+"""
 import os
 import uuid
 import codecs

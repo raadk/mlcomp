@@ -73,3 +73,4 @@ if __name__ == "__main__":
     app = create_app(comp)
     thread = Thread(target=app.run)
     thread.start()
+

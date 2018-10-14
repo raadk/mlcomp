@@ -1,3 +1,6 @@
+"""
+Copyright 2018 - Raad Khraishi
+"""
 import pandas as pd
 import requests
 import codecs

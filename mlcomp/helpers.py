@@ -1,3 +1,6 @@
+"""
+Copyright 2018 - Raad Khraishi
+"""
 import dateutil
 
 
