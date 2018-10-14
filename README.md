@@ -2,8 +2,6 @@
 
 `mlcomp` is a python package that allows you to create and run machine learning and data science competitions.
 
-It can be installed through pip using `pip install mlcomp`.
-
 ## Example
 
 Let's run through a quick example using the Boston housing data from `sklearn` to illustrate how the package works.
