@@ -120,6 +120,11 @@ root_mean_squared_error = EvaluationMetric(rmse, max_=False)
 ```
 
 ## Flask app
+
+![Example competition](img/boston.png?raw=true "Boston Competition")
+
+
+
 It is easy to run a simple Flask app using the created competition:
 
 
