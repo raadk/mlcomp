@@ -26,7 +26,7 @@
             <tr>
                 <th>#</th>
                 <th>Team</th>
-                {% if not lb.final_score.empty %} <th> Final score </th> {% endif %}
+                {% if not is_active %} <th> Final score </th> {% endif %}
                 <th> LB Score </th>
                 <th> Description </th>
                 <th> Submitted </th>
@@ -37,7 +37,7 @@
                 <tr onclick="location.href='{{url_for('submission_info', id_=key)}}';">
                     <td> {{ loop.index }} </td>
                     <td> {{ s.team }} </td>
-                    {% if not lb.final_score.empty %} <td> {{ s.final_score | round(digits) }} </td> {% endif %}
+                    {% if not is_active %} <td> {{ s.final_score | round(digits) }} </td> {% endif %}
                     <td> {{ s.lb_score | round(digits) }} </td>
                     <td> {{ s.description | truncate(60) }} </td>
                     <td> {{ s.submitted.strftime('%Y-%m-%d') }} </td>
