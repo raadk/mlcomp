@@ -1,5 +1,7 @@
 """
 Copyright 2018 - Raad Khraishi
+
+TODO: Make sure competition is valid
 """
 import os
 import uuid
@@ -8,6 +10,7 @@ import datetime
 import dill
 import gzip
 import re
+import warnings
 import shutil
 import pandas as pd
 import numpy as np
@@ -27,20 +30,26 @@ class CompetitionNotCreatedError(Exception):
     pass
 
 
+_competition_not_created_error = CompetitionNotCreatedError(
+    "Competition does not exist. Use Competition.create(...)"
+)
+_rand = np.random.RandomState(333)
+
+
 class EvalMetric:
     """ Class for evaluation metrics """
-    def __init__(self, fun, max_, name=None):
+    def __init__(self, fun, greater_is_better, name=None):
         """
         Parameters
         ----------
         fun : function
             A function that takes two objects, y_true and y_pred,
             and returns a scalar value.
-        max_ : bool
+        greater_is_better : bool
             Is a higher value better?
         """
         self.fun = fun
-        self.max_ = max_
+        self.greater_is_better = greater_is_better
 
         if name is None:
             self.name = self.fun.__name__
@@ -68,16 +77,18 @@ eval_metrics = {
 }
 
 
+def _handle_path(path):
+    if os.path.exists(path):
+        raise FileExistsError("A competition may already exist at " + path)
+    else:
+        os.makedirs(path)
+
+
 class Competition:
     # @TODO FINISH THE EXAMPLE
     """Class to create and manage a machine learning competition"""
 
-    _competition_not_created_error = CompetitionNotCreatedError(
-        "Competition does not exist.Use Competition.create(...)"
-    )
-
     _competition_file = 'competition.pklz'
-    _rand = np.random.RandomState(333)
 
     def __init__(self, path):
         """
@@ -93,7 +104,6 @@ class Competition:
             The path to where the competition folder is located.
         """
         self.path = path
-        self.created = False
 
         file_path = os.path.join(path, Competition._competition_file)
 
@@ -103,20 +113,20 @@ class Competition:
                     self.predictions, self.submission_info, \
                         self.competition_info, self.code = dill.load(f)
                 except EOFError:
-                    raise Competition._competition_not_created_error
-            self.created = True
+                    raise _competition_not_created_error
         else:
-            raise Competition._competition_not_created_error
+            raise _competition_not_created_error
 
-            # Will probably load more often than you create
-
+    # Will probably load more often than you create
     @classmethod
     def create(cls, path, title,
                y_test, eval_metric,
                end_date, start_date=datetime.date.today(),
                description="",
                final_frac=0,
-               train=None, test=None):
+               train=None, test=None,
+               save_after_submission=True,
+               allow_late_submissions=False):
         """
         Creates  a file that stores the competition data at the path provided
 
@@ -159,10 +169,7 @@ class Competition:
         Competition : An instance of the competition class.
         """
 
-        if os.path.exists(path):
-            raise FileExistsError("A competition may already exist at " + path)
-        else:
-            os.makedirs(path)
+        _handle_path(path)
 
         if isinstance(y_test, str):
             if not allowed_file(y_test, DATA_EXTENSIONS):
@@ -182,16 +189,16 @@ class Competition:
         if not set(COLUMN_NAMES[:2]).issubset(y_test.columns.values):
             raise ValueError("y_test must contain columns 'id' and 'y_true'")
 
-        if 'final' not in y_test.columns.values:
+        if COLUMN_NAMES[2] not in y_test.columns.values:
             if (final_frac is None) or (final_frac < 0) or (final_frac >= 1):
                 raise ValueError("final_frac must be between 0 and 1")
             if final_frac == 0:
-                y_test['final'] = False
+                y_test[COLUMN_NAMES[2]] = False
             else:
-                y_test['final'] = Competition._rand.rand(n_obs) < final_frac
+                y_test[COLUMN_NAMES[2]] = _rand.rand(n_obs) < final_frac
         else:
-            y_test['final'] = y_test['final'].astype(bool)
-            if y_test['final'].sum() >= n_obs:
+            y_test[COLUMN_NAMES[2]] = y_test[COLUMN_NAMES[2]].astype(bool)
+            if y_test[COLUMN_NAMES[2]].sum() >= n_obs:
                 raise ValueError("final column must indicate "
                                  "sample of observations (< 100%) "
                                  "to be used in final scoring")
@@ -204,7 +211,7 @@ class Competition:
         end_date = parse_date(end_date)
 
         predictions = y_test.copy()
-        predictions.index.name = 'id'
+        predictions.index.name = 'id'  #TODO Why?
 
         submission_info = pd.DataFrame(columns=['lb_score',
                                                 'final_score',
@@ -255,7 +262,9 @@ class Competition:
             'date_created': datetime.datetime.now(),
             'start_date': start_date,
             'end_date': end_date,
-            'description': description
+            'description': description,
+            'save_after_submission': save_after_submission,
+            'allow_late_submissions': allow_late_submissions
         }
 
         code = dict()
@@ -335,18 +344,20 @@ class Competition:
                 id_ = np.max(self.submission_info.index.values) + 1
         return id_
 
-    def is_closed(self):
+    @property
+    def is_active(self):
         """Checks whether a competition is still open based on the end_date"""
-        delta = datetime.date.today() - self.competition_info['end_date']
+        delta = self.competition_info['end_date'] - datetime.date.today()
         return delta.days >= 0
 
     def _get_competition_metric(self, what="fun"):
-        """Gets either the fun or max_ attributes of the competition metric"""
+        """Gets either the fun or greater_is_better attributes of the
+        competition metric"""
         eval_metric = self.competition_info['eval_metric']
         if what == "fun":
             return eval_metric.fun
         else:
-            return eval_metric.max_
+            return eval_metric.greater_is_better
 
     def submit_predictions(self, preds, team, description="", code=None):
         """
@@ -370,6 +381,13 @@ class Competition:
 
             May also be a list of strings containing the python script.
         """
+
+        if (not self.is_active and
+            not self.competition_info['allow_late_submissions']):
+
+            warnings.warn('Submission ignored. Competition has ended',
+                          Warning)
+            return
 
         if isinstance(preds, str):
             if not allowed_file(preds, DATA_EXTENSIONS):
@@ -403,10 +421,10 @@ class Competition:
 
         self.predictions = pd.merge(self.predictions, preds, on='id')
 
-        final_mask = self.predictions['final']
+        final_mask = self.predictions[COLUMN_NAMES[2]]
 
         lb_score = Competition.score_predictions(
-            self.predictions.loc[~final_mask, 'y_true'],
+            self.predictions.loc[~final_mask, COLUMN_NAMES[1]],
             self.predictions.loc[~final_mask, id_],
             self._get_competition_metric('fun')
         )
@@ -415,7 +433,7 @@ class Competition:
             final_score = lb_score
         else:
             final_score = Competition.score_predictions(
-                self.predictions.loc[final_mask, 'y_true'],
+                self.predictions.loc[final_mask, COLUMN_NAMES[1]],
                 self.predictions.loc[final_mask, id_],
                 self._get_competition_metric('fun')
             )
@@ -437,6 +455,9 @@ class Competition:
                     code = f.readlines()
             self.code[id_] = code
 
+        if self.competition_info['save_after_submission']:
+            self.save()
+
     def delete_submission(self, id_):
         """
         Delete a specific submission.
@@ -454,6 +475,9 @@ class Competition:
         except KeyError:
             return
 
+        if self.competition_info['save_after_submission']:
+            self.save()
+
     def get_sample_submission(self):
         """
         Get an example submission
@@ -463,7 +487,7 @@ class Competition:
         pd.DataFrame : a sample submission filled with dummy data
         """
         sample_submission = self.predictions[['id']].copy()
-        dummy_data = self._rand.choice(
+        dummy_data = _rand.choice(
             self.predictions['y_true'].sample(10, replace=True),
             size=self.predictions.shape[0],
             replace=True
@@ -558,7 +582,7 @@ class Competition:
         """
         sub_info = self.submission_info.copy()
 
-        if not self.is_closed():
+        if self.is_active:
             sub_info.drop('final_score', axis=1, inplace=True)
 
         try:
@@ -566,7 +590,7 @@ class Competition:
         except KeyError:
             return
 
-    def leaderboard(self, show_late=True):
+    def leaderboard(self, show_late_submissions=True):
         """
         Get leaderboard rankings of submissions
 
@@ -576,20 +600,18 @@ class Competition:
         """
         lb = self.submission_info.copy()
         ascending = not self._get_competition_metric('max')
-        if self.is_closed():
+        if not self.is_active:
             by = 'final_score'
         else:
             by = 'lb_score'
             lb.drop('final_score', axis=1, inplace=True)
 
-        if not show_late:
+        if not show_late_submissions:
             lb = lb.loc[lb['submitted'] <= self.competition_info['end_date'], :]
 
         return lb.sort_values(by, axis=0, ascending=ascending)
 
     def __str__(self):
-        if not self.created:
-            return "Competition has not been created or loaded"
         s = "{title} competition from {start_date} to {end_date}"
         return s.format(**self.competition_info)
 
