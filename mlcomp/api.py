@@ -30,7 +30,6 @@ def get_data(url=DEFAULT_URL):
     pass
 
 
-
 def get_predictions(url=DEFAULT_URL):
     """
     Get all submitted predictions

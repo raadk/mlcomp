@@ -21,6 +21,7 @@ from .helpers import (
 COLUMN_NAMES = ['id', 'y_true', 'final']
 PRED_COLUMN_NAMES = ['id', 'pred']
 
+
 class CompetitionNotCreatedError(Exception):
     """Error thrown if competition has not been created"""
     pass
@@ -83,7 +84,8 @@ class Competition:
         Create an instance of the competition class given an existing
         competition.
 
-        Use the class method, Competition.create, to first create  a competition
+        Use the class method, Competition.create, to first create  a
+        competition
 
         Parameters
         ----------
@@ -135,8 +137,8 @@ class Competition:
             Or, a path to a csv file.
 
             Or, a np.ndarray where the first two columns will be interpretted
-            as id and y_true. An optional third column will be used to determine
-            which observations will be used for final scoring.
+            as id and y_true. An optional third column will be used to
+            determine which observations will be used for final scoring.
         eval_metric : EvalMetric
             The evaluation metric to use.
         end_date : str/datetime.date
@@ -217,27 +219,35 @@ class Competition:
             train_data_path = os.path.join(path, 'train.csv')
             if isinstance(train, str):
                 if not allowed_file(train, DATA_EXTENSIONS):
-                    raise ValueError('Invalid argument, train. Only csv files '
-                                     'and pd.DataFrame are currently supported')
+                    raise ValueError(
+                        'Invalid argument, train. Only csv files '
+                        'and pd.DataFrame are currently supported'
+                    )
                 shutil.copy2(train, train_data_path)
             elif isinstance(train, pd.DataFrame):
                 train.to_csv(train_data_path, index=False)
             else:
-                raise TypeError('Invalid argument, train. Only csv files '
-                                'and pd.DataFrame are currently supported.')
+                raise TypeError(
+                    'Invalid argument, train. Only csv files '
+                    'and pd.DataFrame are currently supported.'
+                )
 
         if test is not None:
             test_data_path = os.path.join(path, 'test.csv')
             if isinstance(test, str):
                 if not allowed_file(test, DATA_EXTENSIONS):
-                    raise ValueError('Invalid argument, test. Only csv files '
-                                     'and pd.DataFrame are currently supported')
+                    raise ValueError(
+                        'Invalid argument, test. Only csv files '
+                        'and pd.DataFrame are currently supported'
+                    )
                 shutil.copy2(test, test_data_path)
             elif isinstance(test, pd.DataFrame):
                 test.to_csv(test_data_path, index=False)
             else:
-                raise TypeError('Invalid argument, test. Only csv files '
-                                'and pd.DataFrame are currently supported.')
+                raise TypeError(
+                    'Invalid argument, test. Only csv files '
+                    'and pd.DataFrame are currently supported.'
+                )
 
         competition_info = {
             'title': title,
