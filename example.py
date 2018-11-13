@@ -2,7 +2,6 @@ import os
 import pandas as pd
 import numpy as np
 import datetime
-from threading import Thread
 from sklearn.datasets import load_boston
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import (
@@ -12,9 +11,7 @@ from sklearn.linear_model import TheilSenRegressor, Lars, Lasso
 from mlcomp import Competition, create_app, eval_metrics
 
 
-if __name__ == "__main__":
-    print("Running")
-
+def load_boston_data():
     # Load the data
     boston = load_boston()
     df = pd.DataFrame(boston.data, columns=boston.feature_names)
@@ -27,6 +24,13 @@ if __name__ == "__main__":
     y_test.assign(final=np.random.rand(test.shape[0]) < 0.5, inplace=True)
 
     test = test.drop(['y_true'], axis=1)
+
+    return train, test, y_test
+
+
+if __name__ == "__main__":
+    # Create or load competition
+    train, test, y_test = load_boston_data()
 
     path = "boston_comp"
 
@@ -43,6 +47,9 @@ if __name__ == "__main__":
             test=test
         )
 
+    print(comp)
+
+    # Prepare data for modelling
     X_train = train.drop(['id', 'y_true'], axis=1)
     y_train = train['y_true']
 
@@ -60,6 +67,7 @@ if __name__ == "__main__":
                             team='Blue Lightning',
                             description='Linear regression')
 
+    # Try some different models
     for mod in [RandomForestRegressor, AdaBoostRegressor,
                 GradientBoostingRegressor, TheilSenRegressor, Lars, Lasso]:
         regr = mod()
@@ -71,6 +79,4 @@ if __name__ == "__main__":
     print(comp.leaderboard())
 
     app = create_app(comp)
-    thread = Thread(target=app.run)
-    thread.start()
-
+    app.run()
