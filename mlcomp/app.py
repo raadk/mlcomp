@@ -60,7 +60,8 @@ def create_app(competition, display_digits=4, secret_key=str(uuid.uuid4())):
     template_kwargs = {'digits': display_digits,
                        'title': competition.competition_info['title'],
                        'start_date': competition.competition_info['start_date'],
-                       'end_date': competition.competition_info['end_date']}
+                       'end_date': competition.competition_info['end_date'],
+                       'is_active': competition.is_active}
 
     train_file = os.path.join(competition.path, 'train.csv')
     test_file = os.path.join(competition.path, 'test.csv')
