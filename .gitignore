@@ -10,9 +10,6 @@ vim-markdown-preview.html
 # described in https://git-scm.com/docs/gitignore
 
 *.dat
-*.jpg
-*.png
-*.jpeg
 *.sqlite3
 *.egg-info
 *.pot
@@ -125,8 +122,3 @@ ENV/
 
 # Rope project settings
 .ropeproject
-
-# Django collected static
-static/
-
-!/static/
