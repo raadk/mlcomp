@@ -1,0 +1,182 @@
+body {
+    font-size: 16px;
+}
+
+.container {
+    margin-bottom: 50px;
+}
+
+.panel-default {
+    padding: 0;
+    margin: 0;
+}
+
+.jumbotron {
+    background: black;
+    text-align: center;
+    color: white;
+    cursor: pointer;
+    margin-bottom: 50px;
+}
+
+.jumbotron h1 {
+    font-size: 350%;
+    font-weight: bold;
+}
+
+.table {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    font-size: 150%;
+}
+
+.buttons {
+}
+
+thead  {
+    background: black;
+    color: white;
+}
+.table td {
+    text-align: left;
+}
+
+.table-bordered > tfoot > tr > th,
+.table-bordered > thead > tr > td,
+.table-bordered > thead > tr > th {
+    border: 0;
+}
+
+.leaderboard tbody {
+    cursor: pointer;
+}
+
+.table > tbody > tr > td {
+     vertical-align: middle;
+}
+
+.submission-details form {
+    float: right;
+    margin-left: 10px;
+}
+
+.submit-form form {
+    padding: 10px;
+}
+
+
+#errors {
+    padding-top: 20px;
+}
+
+.error {
+    color: red;
+    font-weight: bold;
+}
+
+
+.panel-code {
+    margin-top: 20px;
+}
+
+.panel-code .panel-title,
+.panel-code .panel-heading span {
+    color: white;
+}
+
+.panel-code .panel-heading {
+    color: white;
+    background-color: black;
+    border-color: black;
+    cursor: pointer;
+}
+
+.panel-code .panel-body {
+    margin: 0;
+    padding: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.panel-code  .row {
+    margin-top:40px;
+    padding: 0 10px;
+}
+.panel-code .clickable{
+    cursor: pointer;
+}
+
+.panel-code  .panel-heading span {
+	margin-top: -20px;
+	font-size: 15px;
+}
+
+
+.panel-code .panel-title {
+    font-size: 150%;
+    font-weight: bold;
+}
+.panel-code  pre.prettyprint, .panel-code  code.prettyprint {
+    border-radius: 0;
+}
+
+
+
+
+/* Pretty printing styles. Used with prettify.js. */
+/* Vim sunburst theme by David Leibovic */
+pre .str, code .str { color: #65B042; } /* string  - green */
+pre .kwd, code .kwd { color: #E28964; } /* keyword - dark pink */
+pre .com, code .com { color: #AEAEAE; font-style: italic; } /* comment - gray */
+pre .typ, code .typ { color: #89bdff; } /* type - light blue */
+pre .lit, code .lit { color: #3387CC; } /* literal - blue */
+pre .pun, code .pun { color: #fff; } /* punctuation - white */
+pre .pln, code .pln { color: #fff; } /* plaintext - white */
+pre .tag, code .tag { color: #89bdff; } /* html/xml tag    - light blue */
+pre .atn, code .atn { color: #bdb76b; } /* html/xml attribute name  - khaki */
+pre .atv, code .atv { color: #65B042; } /* html/xml attribute value - green */
+pre .dec, code .dec { color: #3387CC; } /* decimal - blue */
+
+pre.prettyprint, code.prettyprint {
+	background-color: #000;
+	border-radius: 8px;
+}
+
+pre.prettyprint {
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	white-space: pre-wrap;
+}
+
+
+/* Specify class=linenums on a pre to get line numbering */
+ol.linenums { margin-top: 0; margin-bottom: 0; color: #AEAEAE; } /* IE indents via margin-left */
+
+li.L0, li.L1, li.L2, li.L3, li.L4,
+li.L5, li.L6, li.L7, li.L8 {
+  list-style-type: decimal !important;
+}
+
+#pretty-code li.L1,
+#pretty-code li.L3,
+#pretty-code li.L5,
+#pretty-code li.L7,
+#pretty-code li.L9 {
+ background: black;
+}
+
+
+@media print {
+  pre .str, code .str { color: #060; }
+  pre .kwd, code .kwd { color: #006; font-weight: bold; }
+  pre .com, code .com { color: #600; font-style: italic; }
+  pre .typ, code .typ { color: #404; font-weight: bold; }
+  pre .lit, code .lit { color: #044; }
+  pre .pun, code .pun { color: #440; }
+  pre .pln, code .pln { color: #000; }
+  pre .tag, code .tag { color: #006; font-weight: bold; }
+  pre .atn, code .atn { color: #404; }
+  pre .atv, code .atv { color: #060; }
+}
